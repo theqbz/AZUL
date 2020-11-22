@@ -150,6 +150,8 @@
     <ClCompile Include="AZUL-qbz.cpp" />
     <ClCompile Include="hibakereseshez.cpp" />
     <ClCompile Include="kerdesek.cpp" />
+    <ClCompile Include="layout.cpp" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

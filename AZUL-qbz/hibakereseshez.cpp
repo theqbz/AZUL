@@ -39,8 +39,14 @@ void GKorongListazas(string k[], int ksz, string szoveg) //k[] a korongok tömb, 
 	}
 }
 
-
-
+void PNevlista(string n[], int jsz, string szoveg) //Az n[] a Player struktúrájú tömb Név elemem, jsz a játékosok száma, szöveg a kiírandó szöveg
+{
+	cout << "\n\n * * * HIBAKERESES:\n* * * " << szoveg << endl;
+	for (int i = 0; i < jsz; i++)
+	{
+		cout << "* * * " << i << ". jatekos neve: " << n[i] << endl;
+	}
+}
 
 
 
