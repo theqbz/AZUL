@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29911.84
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AZUL-qbz", "AZUL-qbz\AZUL-qbz.vcxproj", "{AB12132B-2EC9-4C8C-9DF7-22655DFF4BD6}"
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup1", "Setup1\Setup1.vdproj", "{2AA3E3EA-03DF-488B-B982-3D4567ECFEFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,11 +21,6 @@ Global
 		{AB12132B-2EC9-4C8C-9DF7-22655DFF4BD6}.Release|x64.Build.0 = Release|x64
 		{AB12132B-2EC9-4C8C-9DF7-22655DFF4BD6}.Release|x86.ActiveCfg = Release|Win32
 		{AB12132B-2EC9-4C8C-9DF7-22655DFF4BD6}.Release|x86.Build.0 = Release|Win32
-		{2AA3E3EA-03DF-488B-B982-3D4567ECFEFE}.Debug|x64.ActiveCfg = Debug
-		{2AA3E3EA-03DF-488B-B982-3D4567ECFEFE}.Debug|x86.ActiveCfg = Release
-		{2AA3E3EA-03DF-488B-B982-3D4567ECFEFE}.Release|x64.ActiveCfg = Release
-		{2AA3E3EA-03DF-488B-B982-3D4567ECFEFE}.Release|x86.ActiveCfg = Release
-		{2AA3E3EA-03DF-488B-B982-3D4567ECFEFE}.Release|x86.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

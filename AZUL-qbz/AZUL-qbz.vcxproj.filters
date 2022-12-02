@@ -18,13 +18,7 @@
     <ClCompile Include="hibakereseshez.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="kerdesek.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="layout.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AZUL-qbz.cpp">
