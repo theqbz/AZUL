@@ -84,7 +84,6 @@ bool JatekVege(Player j[], int jsz, int zsak[], int dobott[])
 {
 	bool vansor = false;										// Sor-detekror
 	int i = 0;													// Játékosok indexe
-
 	cout << "~ Játék végének ellenõrzése...\n";
 	do {
 		int s = 0;												// A Fal sorainak indexe
@@ -567,10 +566,8 @@ bool CsempeVasar(Player j[], string korongok[], int ksz, int asztal[], int zsak[
 		cout << "~ A kiválasztott csempék áthelyezése...\n";
         // Végigmegy a korongon tárolt csempéken
 		for (int i = 0; i < KMERET; i++) {
-			if (korongok[korong - 1].substr(i, 1) == csempe) {
-                // Ha az aktuális csempe a kért csempe, akkor átadja a játékosnak
-				CsempeAtadas(j, csempe, msor, dobott, aj);
-			}
+            // Ha az aktuális csempe a kért csempe, akkor átadja a játékosnak
+			if (korongok[korong - 1].substr(i, 1) == csempe) { CsempeAtadas(j, csempe, msor, dobott, aj); }
             // A nem kívánt csempéket az asztalra teszi
 			else { asztal[int(korongok[korong - 1][i]) - 65]++; }
 		}
@@ -799,7 +796,6 @@ void BonuszPontok(Player j[], Score e[], int jsz)
 	bool teljesszin = true;									// Van teljes szín
 	int o = 0;												// Oszlopkeresõ
 	int sz = 0;												// Színkeresõ
-
 	cout << "\n* * * Bónuszpontok * * *\n\n";
     // A játékosok indexe
 	for (int i = 0; i < jsz; i++) {
