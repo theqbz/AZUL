@@ -58,14 +58,69 @@ struct Game												// A játék fõ adatai
         AsztalKozep[CSVARIACIOK] = 1;					// Itt tesszük le az asztal közepére a kezdõjátékos jelzõt
     }
 
-	void ujFordulo(Player players[])
+	int JatekosSzamBe()
 	{
-        fordulo++;																									// Növeljük a forduló sorszámát
-        lepes = 0;																									// Visszaállítjuk a fordulón belüli lépésszámot
-        fordulovege = false;																						// A forduló most kezdõdik, úgyhogy még nincs vége
-        currentPlayer = 0;
-        while (!players[currentPlayer].kovetkezik && currentPlayer < numberOfPlayers) currentPlayer++;				// Megkeresi melyik játékos következik
+		string jszbe = "";
+		do {
+			cout << "Add meg a játékosok számát (2, 3 vagy 4 játékos lehet!): ";
+			cin >> jszbe;
+		} while (jszbe != "2" && jszbe != "3" && jszbe != "4");
+		return int(jszbe[0]) - 48;
 	}
+
+	void KezdoKepernyo()
+	{
+		//system("cls");
+		cout << endl;
+		cout << "   A   ZZZZZ U   U L            Beadandó feladat\n";;
+		cout << "  A A      Z U   U L            Programozás (GKLB_INTM021)\n";
+		cout << " A   A    Z  U   U L            tárgyból.\n";
+		cout << " A   A   Z   U   U L            \n";
+		cout << " AAAAA  Z    U   U L            Készítette:\n";
+		cout << " A   A Z     U   U L            Borsodi Zoltán\n";
+		cout << " A   A ZZZZZ  UUU  LLLLL        (b7pk8z)\n";
+		cout << endl;
+		cout << "------------------------------------------------------------\n";
+		cout << endl;
+		cout << " Ez az AZUL címû társasjáték konzolban játszható változata.\n";
+		cout << " A színes csempéket nagybetûk helyettesítik: A, B, C, D és E\n\n";
+		cout << " A játék addig tart, amíg legalább egy játékos felépít egy\n";
+		cout << " különbözõ csempébõl álló, teljes sort a Falán.\n";
+		cout << endl;
+		cout << "------------------------------------------------------------\n";
+		cout << endl;
+	}
+
+	void ZaroKepernyo()
+	{
+		//system("cls");
+		cout << endl;
+		cout << "   A   ZZZZZ U   U L        b               QQQ  BBBB  ZZZZZ\n";
+		cout << "  A A      Z U   U L        b     y   y    Q   Q B   B     Z\n";
+		cout << " A   A    Z  U   U L        b bb  y   y    Q   Q B   B    Z \n";
+		cout << " A   A   Z   U   U L        bb  b y   y    Q   Q BBBB    Z  \n";
+		cout << " AAAAA  Z    U   U L        b   b  yyyy    Q   Q B   B  Z   \n";
+		cout << " A   A Z     U   U L        bbbb      y     QQQ  B   B Z    \n";
+		cout << " A   A ZZZZZ  UUU  LLLLL           yyy     Q     BBBB  ZZZZZ\n";
+		cout << endl;
+		cout << "-------------------------------------------------------------\n";
+		cout << endl;
+		cout << " Készítette: Borsodi Zoltán\n";
+		cout << "             (SZE, mérnökinformatika, levelezõ)\n";
+		cout << endl;
+		cout << " Neptun kód: b7pk8z\n";
+		cout << endl;
+		cout << " E-mail:     borsodi.zoltan@gmail.com\n";
+		cout << endl;
+		cout << "-------------------------------------------------------------\n";
+		cout << endl;
+		cout << " Köszönet az ötletelésért és a tesztelésért\n";
+		cout << " Eszenyi Ákosnak, Tenk Norbertnek,\n";
+		cout << " Pergel Dánielnek és Varga Lászlónak!\n";
+		cout << endl;
+		cout << "-------------------------------------------------------------\n";
+	}
+
 };
 
 struct Player							// A játékosokhoz tartozó adatok
@@ -121,13 +176,13 @@ bool ElfogyottACsempe(Game& game)
 }
 
 // 0/b A JÁTÉK VÉGÉNEK ELLENÕRZÉSE
-bool JatekVege(Player player[], int numberOfPlayers, int zsak[], int dobott[])
+bool JatekVege(Game& game, Player player[])
 {
     // Amint valakinél talál teljes sort a Falon, vége a játéknak
 	cout << "~ Játék végének ellenõrzése...\n";
 	bool completedLine = false;
 	int i = 0;
-	while (!completedLine && i < numberOfPlayers) {
+	while (!completedLine && i < game.numberOfPlayers) {
 		int line = 0;
 		while (!completedLine && line < TABLAMERET) {
 			if (player[i].wall[line].find(".") == player[i].wall[line].npos) {
@@ -138,19 +193,7 @@ bool JatekVege(Player player[], int numberOfPlayers, int zsak[], int dobott[])
 		}
 		i++;
 	}
-	return completedLine || ElfogyottACsempe(zsak, dobott);
-
-	/*
-	do {
-		do {
-			if (player[i].wall[line].find(".") == player[i].wall[line].npos) {
-				completedLine = true;
-			}
-			line++;
-		} while (!completedLine && line < TABLAMERET);
-		i++;
-	} while (!completedLine && i < numberOfPlayers);
-	*/
+	return completedLine || ElfogyottACsempe(game);
 }
 
 // 0/c FORDULÓ VÉGÉNEK ELLENÕRZÉSE
@@ -182,7 +225,7 @@ bool Dontes(string szoveg)
 		cout << szoveg;
 		cin >> valasz;
         // Nagybetûssé alakítjuk a bevitt szöveget
-		for (int n = 0; n < valasz.length(); n++) { valasz[n] = toupper(valasz[n]); }
+		for (int n = 0; n < int(valasz.length()); n++) { valasz[n] = toupper(valasz[n]); }
 	} while (valasz != "I" && valasz != "N");
 	if (valasz == "I") { return true; }
 	else { return false; }
@@ -217,17 +260,6 @@ void kezdoJatekosMegadasa(const Game& game, Player player[])
         else { jokezdo = true; }
 	}
 	player[int(kezd[0] - 49)].kovetkezik = true;
-}
-
-// 1. JÁTÉKOSOK SZÁMÁNAK BEKÉRÉSE
-int JatekosSzamBe()
-{
-	string jszbe = "";
-	do {
-		cout << "Add meg a játékosok számát (2, 3 vagy 4 játékos lehet!): ";
-		cin >> jszbe;
-	} while (jszbe != "2" && jszbe != "3" && jszbe != "4");
-	return int(jszbe[0]) - 48;
 }
 
 // 3/a CSEMPE ELÕHÚZÁSA A ZSÁKBÓL
@@ -304,7 +336,7 @@ string Helyorzo(string ertek)
 }
 
 // 5. KORONGOKON ÉS ASZTAL KÖZEPÉN LÉVÕ CSEMPÉK MEGJELENÍTÉSE
-void KorongAsztalMegj(const Game& game)
+void asztalMegj(const Game& game)
 {
 	const int sorokszama = 8;						// A kiírandó sorok száma összesen
 	string sorok[sorokszama];						// Ide gyûjtjük a kiírandó sorok tartalmát
@@ -350,7 +382,7 @@ void KorongAsztalMegj(const Game& game)
 	}
     // Üres sor
 	sorok[6] += "           " + elv;
-    // Ha még az asztalon van a kezdõjátékosjelölõ...
+    // Ha még az asztalon van a kezdõjátékos-jelölõ...
     // ...felírja azt is...
 	if (game.AsztalKozep[CSVARIACIOK] == 1) { sorok[7] += "Kezdõ      " + elv; }
     // ...különben üres sort ír.
@@ -379,7 +411,7 @@ void PlayerMegj(Game& game, Player player[])
 {
 	const int fs = 4;							// A fejlécbe kiírandó sorok száma
 	const int ps = 3;							// A padlóvonalra kiírandó sorok száma
-	const int ssz = fs + TABLAMERET + ps;		// A kiíandó sorok száma összesen: a fejléc, a tábla és a padlóra kiírandó sorok száma
+	const int ssz = fs + TABLAMERET + ps;		// A kiírandó sorok száma összesen: a fejléc, a tábla és a padlóra kiírandó sorok száma
 	const int tszel = (PADLOMERET * 3) + 2;		// Az táblák szélessége
 	string sorok[ssz];							// Ebbe gyûjtjük a játékos elõtti tábla kiírandó tartalmát soronként
     // Sorok nullázása
@@ -407,7 +439,7 @@ void PlayerMegj(Game& game, Player player[])
 		sorok[1] += player[ji].Nev.substr(0, tszel - 7);					// Név (csonkolva, ha hosszú)
 		sorok[2] += " " + to_string(player[ji].Pontok) + " pont";		// Pontszám
         // A 4. sor elejét tölti fel szóközzel
-		while (sorok[3].length() < sszel - (TABLAMERET * 2)) { sorok[3] += " "; }
+		while (int(sorok[3].length()) < sszel - (TABLAMERET * 2)) { sorok[3] += " "; }
         // A 4. sor végét feltölti az oszlopok sorszámával
 		for (int i = 0; i < TABLAMERET; i++) { sorok[3] += to_string(i + 1) + " "; }
 		// MINTASOR ÉS FAL
@@ -423,14 +455,14 @@ void PlayerMegj(Game& game, Player player[])
 		// PADLÓVONAL
 		sorok[fs + TABLAMERET] += vonal;
 		int p = 0;													// Padlóvonal aktuális karaktere
-		while (p < PADLOMERET && sorok[fs + TABLAMERET + 1].length() < sszel) {
+		while (p < PADLOMERET && int(sorok[fs + TABLAMERET + 1].length()) < sszel) {
 			sorok[fs + TABLAMERET + 1] += "  ";
 			sorok[fs + TABLAMERET + 1] += player[ji].Padlovonal[p];
 			sorok[fs + TABLAMERET + 2] += " " + to_string(-(((p + 1) / 3) + 1));
 			p++;
 		}
 		// VÉGÜL A MARADÉKOT MINDEN SORBAN FELTÖLTI SZÓKÖZZEL
-		for (int u = 0; u < ssz; u++) { while (sorok[u].length() < sszel) { sorok[u] += " "; } }
+		for (int u = 0; u < ssz; u++) { while (int(sorok[u].length()) < sszel) { sorok[u] += " "; } }
 	}
     // AZ ELKÉSZÜLT SOROK KIÍRÁSA
 	for (int ki = 0; ki < ssz; ki++) { cout << sorok[ki] << "|" << endl; }
@@ -438,7 +470,7 @@ void PlayerMegj(Game& game, Player player[])
 }
 
 // 7/a JÁTÉKOS KORONG- ÉS CSEMPEVÁLASZTÁSA VÁSÁRLÁSHOZ
-const string KCsValaszto(const Player player[], const Game& game)
+const string KCsValaszto(const Game& game, const Player player[])
 {
 	string kivalasztottCsempe = "\0";
 	bool joValasztas = false;
@@ -446,7 +478,7 @@ const string KCsValaszto(const Player player[], const Game& game)
 		cout << player[game.currentPlayer].Nev << ", válassz csempéket egy korongról vagy az asztalról!\n(Pl. 1. korong A csempe: 1A | Az asztalt a 0 jelöli: 0D) ";
 		cin >> kivalasztottCsempe;
         // Elõbb nagybetûssé alakítjuk a bevitt szöveget
-		for (int n = 0; n < kivalasztottCsempe.length(); n++) { kivalasztottCsempe[n] = toupper(kivalasztottCsempe[n]); }
+		for (int n = 0; n < int(kivalasztottCsempe.length()); n++) { kivalasztottCsempe[n] = toupper(kivalasztottCsempe[n]); }
         // Ha ki szeretne lépni rögtön megy is vissza
 		if (kivalasztottCsempe == "X") { joValasztas = true; }
         // Ha nem két karaktert írt be, már nem jó
@@ -465,7 +497,7 @@ const string KCsValaszto(const Player player[], const Game& game)
 			cout << "HIBA: Ilyen betûjelû csempe nincs a játékban!\n";
 		}
         // Ha korongot választott és az üres, akkor nem jó
-		else if (int(kivalasztottCsempe[0]) - 48 != 0 && game.Korong[int(kivalasztottCsempe[0]) - 49] == "....") {
+		else if (int(kivalasztottCsempe[0]) - 48 != 0 && game.Korongok[int(kivalasztottCsempe[0]) - 49] == "....") {
 			joValasztas = false;
 			cout << "HIBA: A választott korong üres!\n";
 		}
@@ -475,7 +507,7 @@ const string KCsValaszto(const Player player[], const Game& game)
 			cout << "HIBA: A választott csempébõl nincs az asztalon!\n";
 		}
         // Ha a korongot választott de nincs rajta a kért csempe, akkor nem jó
-		else if (int(kivalasztottCsempe[0]) - 48 != 0 && game.Korong[int(kivalasztottCsempe[0]) - 49].find(kivalasztottCsempe[1]) == game.Korong[int(kivalasztottCsempe[0])].npos) {
+		else if (int(kivalasztottCsempe[0]) - 48 != 0 && game.Korongok[int(kivalasztottCsempe[0]) - 49].find(kivalasztottCsempe[1]) == game.Korongok[int(kivalasztottCsempe[0])].npos) {
 			joValasztas = false;
 			cout << "HIBA: A korongon nincs ilyen csempe!\n";
 		}
@@ -484,13 +516,14 @@ const string KCsValaszto(const Player player[], const Game& game)
 	return kivalasztottCsempe;
 }
 
-// 7/b A JÁTÉKOS MINTASOR VÁLASZTÁSA VÁRÁSLÁSHOZ
-const char SorValaszto(const Player player[], const string csempe, const Game& game)
+// 7/b A JÁTÉKOS MINTASOR VÁLASZTÁSA VÁSÁRLÁSHOZ
+const char SorValaszto(const Game& game, const Player player[], const uint16_t csempe)
 {
-    // Van-e még egyáltalán olyan mintasor, ahová csempét lehet rakni?
+    cout << "SOR VALASZTO FUGGVENY\n";
+	// Van-e még egyáltalán olyan mintasor, ahová csempét lehet rakni?
 	int i = 0;
 	while (i < TABLAMERET && !(player[game.currentPlayer].Mintasor[i].find(".") == player[game.currentPlayer].Mintasor[i].npos)) i++;
-	// Ha nincs -  tehát midnen Mintasor tele van - akkor a csempék mindenképpen a padlóra kerülnek
+	// Ha nincs -  tehát minden Mintasor tele van - akkor a csempék mindenképpen a padlóra kerülnek
 	if (i == TABLAMERET) return '0';
 	// Egyébként meg kell adni, hogy melyik sorba kerüljenek a csempék
     string sor;
@@ -508,7 +541,7 @@ const char SorValaszto(const Player player[], const string csempe, const Game& g
         // Ha a játékos nem a padlót választotta...
         // ...és a kiválasztott Mintasor már nem üres...
         // ...és nincs benne a kiválasztott fajtájú csempe, akkor nem jó
-        else if (sor != "0" && player[game.currentPlayer].Mintasor[int(sor[0]) - 49][0] != '.' && player[game.currentPlayer].Mintasor[int(sor[0]) - 49][0] != csempe[0]) {
+        else if (sor != "0" && player[game.currentPlayer].Mintasor[int(sor[0]) - 49][0] != '.' && player[game.currentPlayer].Mintasor[int(sor[0]) - 49][0] != csempe) {
             cout << "HIBA: Abban a sorban már másfajta csempék vannak!\n";
             josor = false;
         }
@@ -525,66 +558,66 @@ const char SorValaszto(const Player player[], const string csempe, const Game& g
 }
 
 // 7/c CSEMPE A PADLÓRA VAGY A DOBOTTAK KÖZÉ KERÜL CSEMPEVÁSÁRLÁSKOR
-void CsempeAPadlora(Game& game, Player player[], string csempe)
+void CsempeAPadlora(Game& game, Player player[], uint8_t playerId, uint8_t csempe)
 {
     // Ha a Padló tele és nem a Kezdõ-jelölõt kell átrakni, akkor a Csempe a Dobottak közé kerül
-	if (player[game.currentPlayer].Padlovonal.find(".") == player[game.currentPlayer].Padlovonal.npos && csempe != "K") {
+	if (player[playerId].Padlovonal.find(".") == player[playerId].Padlovonal.npos && csempe != 'K') {
 		cout << "~ A Padló tele van, ezért egy " << csempe << " csempét el kell dobni.\n";
-		dobott[int(csempe[0]) - 65]++;
+		game.Dobott[csempe - 65]++;
 	}
     // Ha van hely a Padlón akkor a Csempe vagy Kezdõ-jelölõ oda kerül
-	else if (player[game.currentPlayer].Padlovonal.find(".") != player[game.currentPlayer].Padlovonal.npos) {
-		player[game.currentPlayer].Padlovonal[player[game.currentPlayer].Padlovonal.find_first_of(".")] = csempe[0];
+	else if (player[playerId].Padlovonal.find(".") != player[playerId].Padlovonal.npos) {
+		player[playerId].Padlovonal[player[playerId].Padlovonal.find_first_of(".")] = csempe;
 	}
 	// Ha a Kezdõ-jelölõt kell átrakni de nincs hely a padlón, akkor nincs teendõ, mert a Kezdõt nem lehet a dobottak közé tenni!
 }
 
 // 7/d CSEMPÉK ÁTADÁSA A JÁTÉKOSNAK VAGY A PADLÓRA CSEMPEVÁSÁRLÁSKOR
-void CsempeAtadas(Game& game, Player player[], string csempe, int mintasor)
+void CsempeAtadas(Game& game, Player player[], uint8_t csempe, int mintasor)
 {
     // A játékos a Padlót választotta vagy a teli sor miatt a Padlóra kerülnek a csempék
 	if (mintasor == 0) {
-		cout << "~ Egy " << csempe << " csempe a padlóra kerül.\n";
-		CsempeAPadlora(game, player, csempe);
+		cout << "~ Egy " << char(csempe) << " csempe a padlóra kerül.\n";
+		CsempeAPadlora(game, player, game.currentPlayer, csempe);
 	}
 	else {
         // Ha a mintasor már megtelt, akkor a csempe a padlóra kerül
-		if (player[aj].Mintasor[mintasor - 1].find(".") == player[aj].Mintasor[mintasor - 1].npos) {
+		if (player[game.currentPlayer].Mintasor[mintasor - 1].find(".") == player[game.currentPlayer].Mintasor[mintasor - 1].npos) {
 			cout << "~ Megtelt a(z) " << mintasor << ". sor, ezért egy " << csempe << " csempe a padlóra kerül.\n";
-			CsempeAPadlora(game, player, csempe);
+			CsempeAPadlora(game, player, game.currentPlayer, csempe);
 		}
         // A Csempe a kiválasztott Mintasorba kerül
 		else {
-			cout << "~ Egy " << csempe << " csempe a(z) " << mintasor << ". Mintasorba kerül.\n";
-			player[aj].Mintasor[mintasor - 1][player[aj].Mintasor[mintasor - 1].find_first_of(".")] = csempe[0];
+			cout << "~ Egy " << char(csempe) << " csempe a(z) " << mintasor << ". Mintasorba kerül.\n";
+			player[game.currentPlayer].Mintasor[mintasor - 1][player[game.currentPlayer].Mintasor[mintasor - 1].find_first_of(".")] = csempe;
 		}
 	}
 }
 
-void csempePakolasAsztalrol(Game& game, Player player[], string csempe, uint8_t mintasor)
+void csempePakolasAsztalrol(Game& game, Player player[], uint8_t csempe, uint8_t mintasor)
 {
     // Ha még az asztalon van a kezdõjátékos jelölõ
     if (game.AsztalKozep[CSVARIACIOK] == 1) {
         cout << "~ A Kezdõjátékos-jelölõ áthelyezése a padlóvonalra...\n";
         game.AsztalKozep[CSVARIACIOK] = 0;													// Leveszi az Asztalról a kezdõjátékos jelölõt
-        CsempeAPadlora(game, player, "K");													// majd átadja a padlóvonalra
+        CsempeAPadlora(game, player, game.currentPlayer, 'K');													// majd átadja a padlóvonalra
         KovJatekosReset(game, player);														// Mindenkinél hamisra állítja a következõ-játékos jelölõt
         player[game.currentPlayer].kovetkezik = true;										// Az aktuális játékos kezdi majd a következõ kört
         cout << "~ A következõ fordulót " << player[game.currentPlayer].Nev << " kezdi.\n";
     }
     // Egesével kell átadni az asztalon lévõ csempéket
-    for (int i = 0; i < game.AsztalKozep[int(csempe[0]) - 65]; i++) CsempeAtadas(game, player, csempe, mintasor);
+    for (int i = 0; i < game.AsztalKozep[csempe - 65]; i++) CsempeAtadas(game, player, csempe, mintasor);
     // Végül nullázza a csempék helyét az asztalon
-    game.AsztalKozep[int(csempe[0]) - 65] = 0;
+    game.AsztalKozep[csempe - 65] = 0;
 }
 
-void csempePakolasKorongrol(Game& game, Player player[], string csempe, uint8_t korong, uint8_t mintasor)
+void csempePakolasKorongrol(Game& game, Player player[], uint8_t csempe, uint8_t korong, uint8_t mintasor)
 {
     cout << "~ A kiválasztott csempék áthelyezése...\n";
     // Végigmegy a korongon tárolt csempéken
     for (int i = 0; i < KMERET; i++) {
         // Ha az aktuális csempe a kért csempe, akkor átadja a játékosnak
-        if (game.Korongok[korong - 1].substr(i, 1) == csempe) CsempeAtadas(game, player, csempe, mintasor);
+        if (game.Korongok[korong - 1].substr(i, 1) == to_string(char(csempe))) CsempeAtadas(game, player, csempe, mintasor);
         // A nem kívánt csempéket az asztalra teszi
         else { game.AsztalKozep[int(game.Korongok[korong - 1][i]) - 65]++; }
     }
@@ -596,11 +629,14 @@ void csempePakolasKorongrol(Game& game, Player player[], string csempe, uint8_t 
 // 7. CSEMPÉK VÁSÁRLÁSA KORONGOKRÓL VAGY ASZTALRÓL
 bool CsempeVasar(Game& game, Player player[])
 {
-	string korongEsCsempe = KCsValaszto(player, game);						// A kiválasztott korong és csempe
+	string korongEsCsempe = KCsValaszto(game, player);						// A kiválasztott korong és csempe
+	cout << "korongEsCsempe: " << korongEsCsempe << "\n";
 	if (korongEsCsempe == "X") return true;									// Ha ki akar lépni, rögtön megy is vissza
-	uint8_t	korong	 = int(korongEsCsempe[0]) - 48;							// A kiválasztott korong
-	string	csempe	 = korongEsCsempe.substr(1, 1);							// A kért csempe
-	uint8_t	mintasor = int(SorValaszto(player, csempe, game)) - 48;			// A kiválasztott Mintasor ahová a csempék kerülnek
+	uint16_t	korong	 = int(korongEsCsempe[0]) - 48;							// A kiválasztott korong
+	uint8_t	csempe	 = int(korongEsCsempe[1]);							// A kért csempe
+
+	cout << "korong: " << korong << "\tcsempe: " << csempe << "\n";
+	uint16_t	mintasor = int(SorValaszto(game, player, csempe)) - 48;			// A kiválasztott Mintasor ahová a csempék kerülnek
 	if (mintasor == 40 || mintasor == 72) return true;						// Ha ki akar lépni, máris megy vissza
     // Ha forrásnak az asztalt választotta
 	if (korong == 0) csempePakolasAsztalrol(game, player, csempe, mintasor);
@@ -610,67 +646,67 @@ bool CsempeVasar(Game& game, Player player[])
 }
 
 // 8/a MINTASOROK NULLÁZÁSA
-void MintasorNullazas(Player j[], int aktj, int akts)
+void MintasorNullazas(Player player[], int playerId, int sor)
 {
 	string minta = "\0";								// A Mintasor kirajzolsáshoz szükséges változó
     // A soron belüli pozíció
-	for (int i = 0; i < akts + 1; i++) {
-		j[aktj].Mintasor[akts] = minta + ".";
+	for (int i = 0; i < sor + 1; i++) {
+		player[playerId].Mintasor[sor] = minta + ".";
 		minta += ".";
 	}
 }
 
 // 8/b PADLÓ NULLÁZÁSA
-void PadloNullazas(Player j[], int aj)
+void PadloNullazas(Player player[], int playerId)
 {
-	j[aj].Padlovonal = "\0";							// A padlóvonal üres legyen
+	player[playerId].Padlovonal = "\0";							// A padlóvonal üres legyen
     // Padlóvonalon belüli pozíció
     // A Padlóvonal kirajzolása helyõrzõkkel
-	for (int k = 0; k < PADLOMERET; k++) { j[aj].Padlovonal += "."; }
+	for (int k = 0; k < PADLOMERET; k++) { player[playerId].Padlovonal += "."; }
 }
 
 // 8/c PONTSZÁMÍTÁS FALAZÁSKOR
-int FalPontok(Player j[], int aj, int akts, int kivo)
+int FalPontok(Player player[], uint8_t playerId, uint8_t sor, uint8_t oszlop)
 {
 	int pont = 1;										// A játékos által kapott pontok (egyet biztosan kap, mert felfalazta a csempét)
 	int k = 0;											// Keresõ index
 	bool vansor = false;								// Találat vízszintes keresésénél
 	bool vanoszlop = false;								// Találat függõleges keresésénél
     // Csak akkor néz el balra, ha a lerakott csempe nem a bal szélsõ oszlopba került
-	if (kivo > 0) {
-		k = kivo;
+	if (oszlop > 0) {
+		k = oszlop;
         // Akkor jár pont, ha az aktuális pozíciótól balra is van csempe
-		while (k > 0 && j[aj].wall[akts][k - 1] != '.') {
+		while (k > 0 && player[playerId].wall[sor][k - 1] != '.') {
 			pont++;
 			k--;
 			vansor = true;
 		}
 	}
     // Csak akkor néz el jobbra, ha a lerakott csempe nem a jobb szélsõ oszlopba került
-	if (kivo < TABLAMERET - 1) {
-		k = kivo;
+	if (oszlop < TABLAMERET - 1) {
+		k = oszlop;
         // Akkor jár pont, ha az aktuális pozíciótól jobbra is van csempe
-		while (k < TABLAMERET - 1 && j[aj].wall[akts][k + 1] != '.') {
+		while (k < TABLAMERET - 1 && player[playerId].wall[sor][k + 1] != '.') {
 			pont++;
 			k++;
 			vansor = true;
 		}
 	}
     // Csak akkor néz felfelé, ha a lerakott csempe nem a legfelsõ oszlopba került
-	if (akts > 0) {
-		k = akts;
+	if (sor > 0) {
+		k = sor;
         // Akkor jár pont, ha az aktuális pozíció felett is van csempe
-		while (k > 0 && j[aj].wall[k - 1][kivo] != '.') {
+		while (k > 0 && player[playerId].wall[k - 1][oszlop] != '.') {
 			pont++;
 			k--;
 			vanoszlop = true;
 		}
 	}
     // Csak akkor néz lefelé, ha a lerakott csempe nem a legalsó oszlopba került
-	if (akts < TABLAMERET - 1) {
-		k = akts;
+	if (sor < TABLAMERET - 1) {
+		k = sor;
         // Akkor jár pont, ha az aktuális pozíció alatt is van csempe
-		while (k < TABLAMERET - 1 && j[aj].wall[k + 1][kivo] != '.') {
+		while (k < TABLAMERET - 1 && player[playerId].wall[k + 1][oszlop] != '.') {
 			pont++;
 			k++;
 			vanoszlop = true;
@@ -678,52 +714,52 @@ int FalPontok(Player j[], int aj, int akts, int kivo)
 	}
     // Ha volt sor és oszlop is, akkor még egy pont jár, mert az éppen lerakott csempét egyikbe se számolta bele
 	if (vansor && vanoszlop) { pont++; }
-	cout << j[aj].Nev << ", " << pont << " pontot kaptál a csempe felrakásáért.\n";
+	cout << player[playerId].Nev << ", " << pont << " pontot kaptál a csempe felrakásáért.\n";
 	return pont;
 }
 
 // 8/d PONTLEVONÁS A PADLÓ MIATT
-int PadloPontok(Player j[], int aj)
+int PadloPontok(Player player[], int playerId)
 {
 	int buntipontok = 0;								// A padlóra esett csempékért járó büntetõpontok
     // A padlón belüli pozíció
-	for (int p = 0; p < PADLOMERET; p++) { if (j[aj].Padlovonal[p] != '.') { buntipontok += -(((p + 1) / 3) + 1); } }
-	cout << j[aj].Nev << ", " << buntipontok << " büntetõpontot kaptál a padlóra esett csempék miatt.\n";
+	for (int p = 0; p < PADLOMERET; p++) { if (player[playerId].Padlovonal[p] != '.') { buntipontok += -(((p + 1) / 3) + 1); } }
+	cout << player[playerId].Nev << ", " << buntipontok << " büntetõpontot kaptál a padlóra esett csempék miatt.\n";
 	return buntipontok;
 }
 
 // 8/e FAL FÜGGÕLEGES (OSZLOP) VIZSGÁLATA FALAZÁSHOZ
-bool JoOszlop(Player j[], int aj, int ao, string csempe)
+bool JoOszlop(Player player[], int playerId, int oszlop, uint8_t csempe)
 {
-	bool joo = true;									// Az oszlop alkalmassága
-	int i = 0;											// Oszlop-szkennelõ
+	bool joOszlop = true;									// Az oszlop alkalmassága
+	uint8_t sor = 0;											// Oszlop-szkennelõ
 	do {
         // Amint talál egyet a megfelelõ csempébõl hamisra állítja
-		if (j[aj].wall[i][ao] == csempe[0]) { joo = false; }
-		i++;
-	} while (joo && i < TABLAMERET);
-	return joo;
+		if (player[playerId].wall[sor][oszlop] == csempe) { joOszlop = false; }
+		sor++;
+	} while (joOszlop && sor < TABLAMERET);
+	return joOszlop;
 }
 
 // 8/f CSEMPÉK ELDOBÁSA FALAZÁSKOR
-void CsempeEldobas(Player j[], int dobott[], int aj, int msor)
+void CsempeEldobas(Game& game, Player player[], int playerId, int sor)
 {
 	int i = 0;													// A Padlóvonal egy karakterének indexe
     // Ha a Padlóról kell eldobni csempét
-	if (msor == 0) {
-		while (i < PADLOMERET && j[aj].Padlovonal[i] != '.') {
+	if (sor == 0) {
+		while (i < PADLOMERET && player[playerId].Padlovonal[i] != '.') {
             // Ha az eldobandó csempe a Kezdõjátékos-jelölõ, akkor nem kerül a Dobottak közé
-			if (j[aj].Padlovonal[i] == 'K') { i++; }
+			if (player[playerId].Padlovonal[i] == 'K') { i++; }
 			else {
-				dobott[int(j[aj].Padlovonal[i]) - 65]++;
+				game.Dobott[int(player[playerId].Padlovonal[i]) - 65]++;
 				i++;
 			}
 		}
 	}
     // Ha a Mintasorból kell eldobni csempét
 	else {
-		while (i < j[aj].Mintasor[msor - 1].length() - 1) {
-			dobott[int(j[aj].Mintasor[msor - 1][i]) - 65]++;
+		while (i < int(player[playerId].Mintasor[sor - 1].length()) - 1) {
+			game.Dobott[int(player[playerId].Mintasor[sor - 1][i]) - 65]++;
 			i++;
 		}
 	}
@@ -734,22 +770,20 @@ bool Falazas(Game& game, Player player[])
 {
 	bool   jovalasz		 = false;				// A megfelelõ oszlop kivalasztasa
 	string oszlop		 = "\0";				// A kiválasztott oszlop
-	string csempe		 = "\0";				// Az éppen manipulált csempe
-	int    osszespluszp	 = 0;					// A csempék falazásáért járó pontok
-	int    buntetopontok = 0;					// A padlóra esett cempék miatt kapott büntetõpontok
 	cout << "* * * Kezdõdik a falazás! * * *\n";;
     // Aktuális játékos sorszáma
-	for (int i = 0; i < game.numberOfPlayers; i++) {
+	for (int playerId = 0; playerId < game.numberOfPlayers; playerId++) {
         // Mintasor szorszáma
 		for (int sor = 0; sor < TABLAMERET; sor++) {
             // Ha az aktuális Mintasor nincs tele
-			if (player[i].Mintasor[sor].find(".") == player[i].Mintasor[sor].npos) {
+			if (player[playerId].Mintasor[sor].find(".") == player[playerId].Mintasor[sor].npos) {
                 // Ha a Falon abban a sorban még nincs a Mintasorban lévõkkel azonos csempe
-				if (player[i].wall[sor].find(player[i].Mintasor[sor][0]) == player[i].wall[sor].npos) {
-					KorongAsztalMegj(game);																// Megjeleníti a Korongok, az Asztal, a Zsák és a Dobott tartalmát
-					PlayerMegj(game, player);															// Megjeleníti a játékosok tábláit
-					csempe = player[i].Mintasor[sor][0];
-					cout << player[i].Nev << ", a " << sor + 1 << ". sorból egy " << csempe << " csempét felfalazhatsz.\n";
+				if (player[playerId].wall[sor].find(player[playerId].Mintasor[sor][0]) == player[playerId].wall[sor].npos) {
+					// Az asztal és a játékosok rajzolása
+					asztalMegj(game);
+					PlayerMegj(game, player);
+					uint8_t csempe = player[playerId].Mintasor[sor][0];				// Az éppen manipulált csempe
+					cout << player[playerId].Nev << ", a " << sor + 1 << ". sorból egy " << char(csempe) << " csempét felfalazhatsz.\n";
 					do {
 						cout << "Melyik oszlopba szeretnéd teni? (1-tõl " << TABLAMERET << "-ig, a padlót a 0-val adhatod meg) ";
 						cin >> oszlop;
@@ -761,12 +795,12 @@ bool Falazas(Game& game, Player player[])
 							cout << "HIBA: Ilyen sorszámú oszlop nincs a falon!\n";
 						}
                         // Ha nem a Padlót választotta és a kiválasztott oszlopban lévõ hely nem üres
-						else if (oszlop != "0" && player[i].wall[sor][int(oszlop[0]) - 49] != '.') {
+						else if (oszlop != "0" && player[playerId].wall[sor][int(oszlop[0]) - 49] != '.') {
 							jovalasz = false;
 							cout << "HIBA: A kiválasztott hely foglalt!\n";
 						}
                         // Ha nem a Padlót választotta de a megadott oszlopban valahol már van ilyen csempe
-						else if (oszlop != "0" && !JoOszlop(player, i, int(oszlop[0]) - 49, csempe)) {
+						else if (oszlop != "0" && !JoOszlop(player, playerId, int(oszlop[0]) - 49, csempe)) {
 							jovalasz = false;
 							cout << "HIBA: Ebben az oszlopban már van ilyen csempe!\n";
 						}
@@ -775,50 +809,50 @@ bool Falazas(Game& game, Player player[])
                     // Ha a játékos a Padlót választotta
 					if (oszlop == "0") {
                         // Annyiszor dobok csempét a padlóra, ahány darab a Mintasorban volt (azaz a Mintasor hossza)
-						for (int p = 0; p < player[i].Mintasor[sor].length(); p++) {
-							cout << "~ Egy " << csempe << " a(z) " << sor + 1 << ". sorból a Padlóra kerül.\n";
+						for (int p = 0; p < int(player[playerId].Mintasor[sor].length()); p++) {
+							cout << "~ Egy " << char(csempe) << " a(z) " << sor + 1 << ". sorból a Padlóra kerül.\n";
                             // Egyesével a Padlóra kerülnek a csempék
-							CsempeAPadlora(game, player, csempe, i);
+							CsempeAPadlora(game, player, playerId, csempe);
 						}
 					}
 					else {
-						cout << "~ Egy " << csempe << " a(z) " << sor + 1 << ". sorból a Fal " << oszlop[0] - 48 << ". oszlopába kerül.\n";
-						player[i].wall[sor][int(oszlop[0]) - 49] = csempe[0];				// A falra kerül a csempe
-						player[i].Pontok += FalPontok(player, i, sor, int(oszlop[0]) - 49);		// A falazásért pontot kap a játékos
+						cout << "~ Egy " << char(csempe) << " a(z) " << sor + 1 << ". sorból a Fal " << oszlop[0] - 48 << ". oszlopába kerül.\n";
+						player[playerId].wall[sor][int(oszlop[0]) - 49] = csempe;					// A falra kerül a csempe
+						player[playerId].Pontok += FalPontok(player, playerId, sor, int(oszlop[0]) - 49);		// A falazásért pontot kap a játékos
 						cout << "~ A Mintasorban maradt csempék eldobása...\n";
-						CsempeEldobas(player, game.Dobott, i, sor + 1);						// Eldobjuk a maradék csempét a Mintasorból
+						CsempeEldobas(game, player, playerId, sor + 1);							// Eldobjuk a maradék csempét a Mintasorból
 					}
 					cout << "~ Mintasor ürítése...\n";
-					MintasorNullazas(player, i, sor);										// A Mintasor ürítése
+					MintasorNullazas(player, playerId, sor);										// A Mintasor ürítése
 				}
                 // Ha a Falon már van a Mintasorban lévõkkel azonos csempe
 				else {
-					csempe = player[i].Mintasor[sor][0];
-					cout << "~ Van már " << csempe << " csempe a Fal " << sor << ". sorában, ezért a Mintasorból az összes a Padlóra kerül.\n";
+					uint8_t csempe = player[playerId].Mintasor[sor][0];
+					cout << "~ Van már " << char(csempe) << " csempe a Fal " << sor << ". sorában, ezért a Mintasorból az összes a Padlóra kerül.\n";
                     // Annyiszor dobok csempét a padlóra, ahány a Mintasorban volt
-					for (int p = 0; p < player[i].Mintasor[sor].length(); p++) {
+					for (int p = 0; p < int(player[playerId].Mintasor[sor].length()); p++) {
                         // Egyesével a Padlóra kerülnek a csempék
-						CsempeAPadlora(game, player, csempe, i);
+						CsempeAPadlora(game, player, playerId, csempe);
 					}
 					cout << "~ Mintasor ürítése...\n";
-					MintasorNullazas(player, i, sor);								// A Mintasor ürítése
+					MintasorNullazas(player, playerId, sor);								// A Mintasor ürítése
 				}
 			}
 		}
 		cout << "~ Büntetõpontok számítása...\n";
-		buntetopontok = PadloPontok(player, i);				// A padlón lévõ csempék után járó büntetõpontok kiszámítása
-        // Ha a büntetõpontok miatt negatív lenne a játékos pontszáma, akkor nulla pontja lesz
-		if (player[i].Pontok + buntetopontok < 0) { player[i].Pontok = 0; }
-		else { player[i].Pontok += buntetopontok; }
-		CsempeEldobas(player, game.Dobott, i, 0);														// Eldobjuk a csempéket a Padlóról
-		PadloNullazas(player, i);																	// Üríti a Padlót
-		cout << player[i].Nev << ", a falazás után " << player[i].Pontok << " pontod van.\n";
+		int buntetopontok = PadloPontok(player, playerId);					// A padlóra esett cempék miatt kapott büntetõpontok
+		// Ha a büntetõpontok miatt negatív lenne a játékos pontszáma, akkor nulla pontja lesz
+		if (player[playerId].Pontok + buntetopontok < 0) { player[playerId].Pontok = 0; }
+		else { player[playerId].Pontok += buntetopontok; }
+		CsempeEldobas(game, player, playerId, 0);														// Eldobjuk a csempéket a Padlóról
+		PadloNullazas(player, playerId);																	// Üríti a Padlót
+		cout << player[playerId].Nev << ", a falazás után " << player[playerId].Pontok << " pontod van.\n";
 	}
 	return false;
 }
 
 // 9. BÓNUSZPONTOK SZÁMÍTÁSA
-void BonuszPontok(Player j[], Score e[], int jsz)
+void BonuszPontok(Game& game, Player player[], Score score[])
 {
 	int bonuszsor = 0;										// A teljes sorokért járó bónuszpontok
 	int bonuszoszlop = 0;									// A teljes oszlopokért járó bónuszpontok
@@ -829,20 +863,20 @@ void BonuszPontok(Player j[], Score e[], int jsz)
 	int sz = 0;												// Színkeresõ
 	cout << "\n* * * Bónuszpontok * * *\n\n";
     // A játékosok indexe
-	for (int i = 0; i < jsz; i++) {
+	for (int i = 0; i < game.numberOfPlayers; i++) {
         // Nullázzuk a sorok számát az adott játékos eredményjelzõjénél
-		e[i].SorokSzama = 0; 
+		score[i].SorokSzama = 0; 
 		for (int s = 0; s < TABLAMERET; s++) {
             // Ha a Fal adott sorában nincs üres hely, akkor jár a 2 pont
-			if (j[i].wall[s].find(".") == j[i].wall[s].npos) {
+			if (player[i].wall[s].find(".") == player[i].wall[s].npos) {
 				bonuszsor += 2;
-				e[i].SorokSzama++;							// Ha találtunk nála egy sort, akkor az eredményjelzõn is kap érte 1 pontot
+				score[i].SorokSzama++;							// Ha találtunk nála egy sort, akkor az eredményjelzõn is kap érte 1 pontot
 			}
 			teljesoszlop = true;
 			o = 0;
 			do {
                 // Amint talál az oszlopban egy üres helyet, már nem teljes az osztlop
-				if (j[i].wall[o][s] == '.') { teljesoszlop = false; }
+				if (player[i].wall[o][s] == '.') { teljesoszlop = false; }
 				o++;
 			} while (teljesoszlop && o < TABLAMERET);
             // Ha a Fal adott oszlopában nincs üres hely, akkor jár a 7 pont
@@ -854,14 +888,14 @@ void BonuszPontok(Player j[], Score e[], int jsz)
 			sz = 0;
 			do {
                 // Amint talál egy olyan sort, amiben nincs az adott cseme, már nem teljes a szín
-				if (j[i].wall[sz].find(char(c + 65)) == j[i].wall[sz].npos) { teljesszin = false; }
+				if (player[i].wall[sz].find(char(c + 65)) == player[i].wall[sz].npos) { teljesszin = false; }
 				sz++;
 			} while (teljesszin && sz < TABLAMERET);
             // Ha nincs olyan sor a Falon, amiben ne szerepelne az adott Csempe, akkor jár a 10 pont
 			if (teljesszin) { bonuszszin += 10; }
 		}
-		j[i].Pontok += bonuszsor + bonuszoszlop + bonuszszin;
-		cout << j[i].Nev << " bónuszpontjai:\n\t+"
+		player[i].Pontok += bonuszsor + bonuszoszlop + bonuszszin;
+		cout << player[i].Nev << " bónuszpontjai:\n\t+"
 			<< bonuszsor << " pont a sorokért\n\t+"
 			<< bonuszoszlop << " pont az oszlopokért\n\t+" 
 			<< bonuszszin << " pont a teljes színekért.\n";
@@ -869,105 +903,62 @@ void BonuszPontok(Player j[], Score e[], int jsz)
 }
 
 // 10. EREDMÉNYEK KIÍRÁSA
-void Vegeredmeny(Player j[], Score e[], int jsz)
+void Vegeredmeny(Game& game, Player player[], Score score[])
 {
 	string n = "\0";									// Neveket tároló segédváltozó
 	int p = 0;											// Pontokat tároló segédváltozó
 	int s = 0;											// A Sorok számát tároló segédváltozó
 
     // Átmásoljuk az eredményjelzõ tömbbe a játékosok neveit és pontszámait
-	for (int m = 0; m < jsz; m++) {
-		e[m].Nev = j[m].Nev;
-		e[m].Pont = j[m].Pontok;
+	for (int i = 0; i < game.numberOfPlayers; i++) {
+		score[i].Nev = player[i].Nev;
+		score[i].Pont = player[i].Pontok;
 	}
 
     // A kisebb indexû elem
-	for (int i = 0; i < jsz - 1; i++) {
+	for (int i = 0; i < game.numberOfPlayers - 1; i++) {
         // Az egyel nagyobb indexû elem
-		for (int k = i + 1; k < jsz; k++) {
+		for (int k = i + 1; k < game.numberOfPlayers; k++) {
             // Ha a kisebbik indexû kisebb, mint a nagyobb indexû, akkor csere (mert a helyezéseket az index határozza meg)
-			if (e[i].Pont < e[k].Pont) {
-				n = e[i].Nev;
-				p = e[i].Pont;
-				s = e[i].SorokSzama;
-				e[i].Nev = e[k].Nev;
-				e[i].Pont = e[k].Pont;
-				e[i].SorokSzama = e[k].SorokSzama;
-				e[k].Nev = n;
-				e[k].Pont = p;
-				e[k].SorokSzama = s;
+			if (score[i].Pont < score[k].Pont) {
+				n = score[i].Nev;
+				p = score[i].Pont;
+				s = score[i].SorokSzama;
+				score[i].Nev = score[k].Nev;
+				score[i].Pont = score[k].Pont;
+				score[i].SorokSzama = score[k].SorokSzama;
+				score[k].Nev = n;
+				score[k].Pont = p;
+				score[k].SorokSzama = s;
 			}
             // Ha a két egymás melletti elem egyenlõ, akkor a sorok száma dönt
-			else if (e[i].Pont == e[k].Pont && e[i].SorokSzama < e[k].SorokSzama) {
-				n = e[i].Nev;
-				p = e[i].Pont;
-				s = e[i].SorokSzama;
-				e[i].Nev = e[k].Nev;
-				e[i].Pont = e[k].Pont;
-				e[i].SorokSzama = e[k].SorokSzama;
-				e[k].Nev = n;
-				e[k].Pont = p;
-				e[k].SorokSzama = s;
+			else if (score[i].Pont == score[k].Pont && score[i].SorokSzama < score[k].SorokSzama) {
+				n = score[i].Nev;
+				p = score[i].Pont;
+				s = score[i].SorokSzama;
+				score[i].Nev = score[k].Nev;
+				score[i].Pont = score[k].Pont;
+				score[i].SorokSzama = score[k].SorokSzama;
+				score[k].Nev = n;
+				score[k].Pont = p;
+				score[k].SorokSzama = s;
 			}
 		}
 	}
 	cout << "\n\n* * * VÉGEREDMÉNY * * *\n\n";
-	for (int l = 0; l < jsz; l++) { cout << l + 1 << ". helyezett: " << e[l].Nev << ", " << e[l].Pont << " ponttal, " << e[l].SorokSzama << " teljes sorral\n"; }
+	for (int l = 0; l < game.numberOfPlayers; l++) { cout << l + 1 << ". helyezett: " << score[l].Nev << ", " << score[l].Pont << " ponttal, " << score[l].SorokSzama << " teljes sorral\n"; }
 }
 
-// 11. KEZDÕ KÉPERNYÕ
-void KezdoKepernyo()
+void ujFordulo(Game& game, Player players[])
 {
-	system("cls");
-	cout << endl;
-	cout << "   A   ZZZZZ U   U L            Beadandó feladat\n";;
-	cout << "  A A      Z U   U L            Programozás (GKLB_INTM021)\n";
-	cout << " A   A    Z  U   U L            tárgyból.\n";
-	cout << " A   A   Z   U   U L            \n";
-	cout << " AAAAA  Z    U   U L            Készítette:\n";
-	cout << " A   A Z     U   U L            Borsodi Zoltán\n";
-	cout << " A   A ZZZZZ  UUU  LLLLL        (b7pk8z)\n";
-	cout << endl;
-	cout << "------------------------------------------------------------\n";
-	cout << endl;
-	cout << " Ez az AZUL címû társasjáték konzolban játszható változata.\n";
-	cout << " A színes csempéket nagybetûk helyettesítik: A, B, C, D és E\n\n";
-	cout << " A játék addig tart, amíg legalább egy játékos felépít egy\n";
-	cout << " különbözõ csempébõl álló, teljes sort a Falán.\n";
-	cout << endl;
-	cout << "------------------------------------------------------------\n";
-	cout << endl;
+	game.fordulo++;															// Növeljük a forduló sorszámát
+	game.lepes = 0;															// Visszaállítjuk a fordulón belüli lépésszámot
+	game.fordulovege = false;												// A forduló most kezdõdik, úgyhogy még nincs vége
+	game.currentPlayer = 0;
+	// Megkeresi melyik játékos következik
+	while (!players[game.currentPlayer].kovetkezik && game.currentPlayer < game.numberOfPlayers) game.currentPlayer++;
 }
-// 11. ZÁRÓ KÉPERNYÕ
-void ZaroKepernyo()
-{
-	system("cls");
-	cout << endl;
-	cout << "   A   ZZZZZ U   U L        b               QQQ  BBBB  ZZZZZ\n";
-	cout << "  A A      Z U   U L        b     y   y    Q   Q B   B     Z\n";
-	cout << " A   A    Z  U   U L        b bb  y   y    Q   Q B   B    Z \n";
-	cout << " A   A   Z   U   U L        bb  b y   y    Q   Q BBBB    Z  \n";
-	cout << " AAAAA  Z    U   U L        b   b  yyyy    Q   Q B   B  Z   \n";
-	cout << " A   A Z     U   U L        bbbb      y     QQQ  B   B Z    \n";
-	cout << " A   A ZZZZZ  UUU  LLLLL           yyy     Q     BBBB  ZZZZZ\n";
-	cout << endl;
-	cout << "-------------------------------------------------------------\n";
-	cout << endl;
-	cout << " Készítette: Borsodi Zoltán\n";
-	cout << "             (SZE, mérnökinformatika, levelezõ)\n";
-	cout << endl;
-	cout << " Neptun kód: b7pk8z\n";
-	cout << endl;
-	cout << " E-mail:     borsodi.zoltan@gmail.com\n";
-	cout << endl;
-	cout << "-------------------------------------------------------------\n";
-	cout << endl;
-	cout << " Köszönet az ötletelésért és a tesztelésért\n";
-	cout << " Eszenyi Ákosnak, Tenk Norbertnek,\n";
-	cout << " Pergel Dánielnek és Varga Lászlónak!\n";
-	cout << endl;
-	cout << "-------------------------------------------------------------\n";
-}
+
 
 int main()
 {
@@ -983,32 +974,31 @@ int main()
 	kezdoJatekosMegadasa(game, players);					// A kezdõjátékos megadása
 
 	while (!game.jatekvege) {
-		game.jatekvege = KorongTolto(game);																					// Feltölti a Korongokat, az Asztalta teszi a kezdõjátékos jelölõt
-		game.ujFordulo(players);
+		game.jatekvege = KorongTolto(game);																			// Feltölti a Korongokat, az Asztalta teszi a kezdõjátékos jelölõt
+		ujFordulo(game, players);
 		while (!game.fordulovege && !game.jatekvege) {
 			game.lepes++;
 //			system("cls");
 			cout << "* * *  CSEMPEVÁSÁR " << game.fordulo << ". forduló " << game.lepes << ". lépés  * * *\n\n";
-			KorongAsztalMegj(game);																					// Megjeleníti a Korongok, az Asztal, a Zsák és a Dobott tartalmát
+			asztalMegj(game);																						// Megjeleníti a Korongok, az Asztal, a Zsák és a Dobott tartalmát
 			PlayerMegj(game, players);																				// Megjeleníti a játékosok tábláit
 			game.kilepes = CsempeVasar(game, players);																// A játékos csempéket vásárolhat a Korongokról vagy az Asztalról
 			if (game.currentPlayer == game.numberOfPlayers - 1) { game.currentPlayer = 0; }							// Egyel léptei az játékosokat
 			else { game.currentPlayer++; }
 			game.fordulovege = ForduloVege(game) || game.kilepes;													// A forduló végének leellenõrzése
 		}
-		if (!game.kilepes) {
-			game.kilepes = Falazas(players, game.Korongok, game.AsztalKozep, game.Zsak, game.Dobott, game.KorongSzam, game.numberOfPlayers);		// Falazás + pontok
-		}
-		game.jatekvege = JatekVege(players, game.numberOfPlayers, game.Zsak, game.Dobott) || game.kilepes;										// A játék végének ellenõrzése
+		if (!game.kilepes) game.kilepes = Falazas(game, players);													// Falazás + pontok
+		game.jatekvege = JatekVege(game, players) || game.kilepes;													// A játék végének ellenõrzése
 	}
-	BonuszPontok(players, score, game.numberOfPlayers);
-	Vegeredmeny(players, score, game.numberOfPlayers);
+	BonuszPontok(game, players, score);
+	//Vegeredmeny(game, players, score);
 	cout << "\nGRATULÁLOK!\n";
 	cout << "Köszönöm, hogy játszottatok!\n\n\n";
 	system("pause");
-	ZaroKepernyo();
+	//game.ZaroKepernyo();
 	system("pause");
 	delete[]game.Korongok;
 	delete[]players;
+	delete[]score;
 	return 0;
 }
